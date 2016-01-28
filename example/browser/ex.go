@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 
@@ -31,11 +30,8 @@ type GUI struct{}
 
 //Write is
 func (g *GUI) Write(args *Args, reply *int) error {
-	//show jQuery Version on console:
-	print(args.C)
-
 	//show welcome message:
-	jQuery(OUTPUT).SetText("Welcome to GopherJS, " + args.C + " !")
+	jQuery(OUTPUT).SetText("from server:" + args.C)
 	return nil
 }
 
@@ -47,7 +43,6 @@ func main() {
 	}
 	//	defer b.Close()
 	jQuery(INPUT).On(jquery.KEYUP, func(e jquery.Event) {
-		log.Println("keyup")
 		go func() {
 			args := Args{A: 17, B: 8}
 			var reply int
@@ -55,9 +50,8 @@ func main() {
 			if err != nil {
 				log.Fatal("arith error:", err)
 			}
-			fmt.Printf("Arith: %d*%d=%d\n", args.A, args.B, reply)
 			//show welcome message:
-			jQuery(OUTPUT2).SetText("Welcome to GopherJS, " + strconv.Itoa(reply) + " !")
+			jQuery(OUTPUT2).SetText("result of mult" + strconv.Itoa(reply))
 		}()
 	})
 

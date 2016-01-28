@@ -12,7 +12,8 @@ before_install:
 - export PATH=$PATH:$GOPATH/bin
 
 script:
-- go test -v -covermode=count -coverprofile=coverage.out
+- cd webserver;go test -v -covermode=count -coverprofile=coverage.out;cd ..
+- cd browser;go test -v -covermode=count -coverprofile=coverage.out;cd ..
 
 after_script:
 - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci

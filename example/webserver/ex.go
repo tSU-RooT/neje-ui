@@ -20,7 +20,6 @@ type Arith struct{}
 
 //Multiply is
 func (t *Arith) Multiply(args *Args, reply *int) error {
-	log.Println("mult")
 	*reply = args.A * args.B
 	return nil
 }

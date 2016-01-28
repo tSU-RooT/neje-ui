@@ -48,7 +48,7 @@ type GUI struct{}
 //func to be called from web server
 func (g *GUI) Write(args *Args, reply *int) error {
 	//show welcome message:
-	jQuery(OUTPUT).SetText("Welcome to GopherJS, " + args.C + " !")
+	jQuery(OUTPUT).SetText(args.C)
 	return nil
 }
 
