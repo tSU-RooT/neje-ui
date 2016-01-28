@@ -57,15 +57,11 @@ func (g *GUI) Write(args *Args, reply *int) error {
 
 func main() {
 	b, _ := browser.New("localhost:7000", new(GUI))
-	jQuery(INPUT).On(jquery.KEYUP, func(e jquery.Event) {
-		go func() {
-			args := Args{A: 17, B: 8}
-			var reply int
+	args := Args{A: 17, B: 8}
+	var reply int
 //call func in web server from browser 
-			b.Call("Arith.Multiply", args, &reply)
-			jQuery("#output").SetText(strconv.Itoa(reply))
-		}()
-	})
+	b.Call("Arith.Multiply", args, &reply)
+	jQuery("#output").SetText(strconv.Itoa(reply))
 }
 ```
 
