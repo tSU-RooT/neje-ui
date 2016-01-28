@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/utamaro/wsrpc.svg?branch=master)](https://travis-ci.org/utamaro/wsrpc)
 [![GoDoc](https://godoc.org/github.com/utamaro/wsrpc?status.svg)](https://godoc.org/github.com/utamaro/wsrpc)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/utamaro/wsrpc/master/LICENSE)
-[![Coverage Status](https://coveralls.io/repos/utamaro/wsrpc/badge.svg?branch=master)](https://coveralls.io/r/utamaro/wsrpc?branch=master)
 
 
 # wsrpc
