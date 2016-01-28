@@ -66,8 +66,9 @@ func main() {
 }
 ```
 
-Then compile by gopherjs to create ex.js:
+Then compile it by gopherjs to create ex.js:
 
+ex.html
 ```
 gopherjs build ex.go
 ```
