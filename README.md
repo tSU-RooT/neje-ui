@@ -68,18 +68,18 @@ func main() {
 
 Then compile it by gopherjs to create ex.js:
 
-ex.html
 ```
 gopherjs build ex.go
 ```
 
 
+ex.html
 ```html
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Welcome to GopherJS with jQuery</title>
+    <title>wsrpc example</title>
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 </head>
 <body>
