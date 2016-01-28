@@ -21,7 +21,10 @@ This requires
 
 * git
 * go 1.4+
-
+* gopherjs
+```
+go get -u https://github.com/gopherjs/gopherjs
+```
 
 ## Installation
 
@@ -33,9 +36,10 @@ This requires
 
 ## browser side
 
-ex.go
+[ex.go](https://github.com/utamaro/wsrpc/blob/master/example/browser/ex.go)
 
 ```go
+
 type Args struct {
 	A int
 	B int
@@ -47,12 +51,12 @@ type GUI struct{}
 //func to be called from web server
 func (g *GUI) Write(args *Args, reply *int) error {
 	//show welcome message:
-	jQuery(OUTPUT).SetText(args.C)
+	jQuery("#output2").SetText(args.C)
 	return nil
 }
 
 func main() {
-	b, _ := browser.New("7000", new(GUI))
+	b, _ := browser.New("localhost:7000", new(GUI))
 	jQuery(INPUT).On(jquery.KEYUP, func(e jquery.Event) {
 		go func() {
 			args := Args{A: 17, B: 8}
@@ -72,7 +76,7 @@ gopherjs build ex.go
 ```
 
 
-ex.html
+[ex.html](https://github.com/utamaro/wsrpc/blob/master/example/browser/ex.html)
 ```html
 <!doctype html>
 <html lang="en">
@@ -89,6 +93,8 @@ ex.html
 ```
 
 ## webserver side
+
+[ex.go](https://github.com/utamaro/wsrpc/blob/master/example/webserver/ex.go)
 
 ```go
 type Args struct {
@@ -112,6 +118,8 @@ func main() {
 	ws.Call("GUI.Write", &Args{C: "test"}, &reply)
 }
 ```
+
+Then copy ex.js to the webserver directory and access to http://localhost:7000/ex.html
 
 
 # Contribution
