@@ -16,11 +16,13 @@ type Browser struct {
 }
 
 //New connects websocket and returns Browser obj.
-func New(dest string, str interface{}) (*Browser, error) {
+func New(dest string, strs ...interface{}) (*Browser, error) {
 	var err error
 	b := &Browser{}
-	if err := rpc.Register(str); err != nil {
-		return nil, err
+	for _, str := range strs {
+		if err := rpc.Register(str); err != nil {
+			return nil, err
+		}
 	}
 	b.s, err = websocket.Dial("ws://" + dest + "/ws-client") // Blocks until connection is established
 	if err != nil {

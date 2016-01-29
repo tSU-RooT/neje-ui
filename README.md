@@ -83,6 +83,7 @@ gopherjs build ex.go
 </head>
 <body>
     <span id="output"></span>
+    <span id="output2"></span>
     <script src="ex.js"></script>
 </body>
 </html>
@@ -115,7 +116,7 @@ func main() {
 }
 ```
 
-Then copy ex.js to the webserver directory and access to http://localhost:7000/ex.html
+Then copy ex.html and ex.js to the webserver directory and access to http://localhost:7000/ex.html
 
 
 # Contribution

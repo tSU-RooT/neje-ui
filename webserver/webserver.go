@@ -16,9 +16,11 @@ type WebServer struct {
 }
 
 //New return WebServer obj.
-func New(host string, str interface{}) (*WebServer, error) {
-	if err := rpc.Register(str); err != nil {
-		return nil, err
+func New(host string, strs ...interface{}) (*WebServer, error) {
+	for _, str := range strs {
+		if err := rpc.Register(str); err != nil {
+			return nil, err
+		}
 	}
 	w := &WebServer{
 		ch: make(chan struct{}),
