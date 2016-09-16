@@ -2,6 +2,7 @@ package browser
 
 import (
 	"log"
+	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
 
@@ -11,8 +12,8 @@ import (
 //Browser represents RPC of browser side
 type Browser struct {
 	Client *rpc.Client
-	s      *websocket.Conn
-	c      *websocket.Conn
+	s      net.Conn
+	c      net.Conn
 }
 
 //New connects websocket and returns Browser obj.

@@ -23,7 +23,7 @@ This requires
 * go 1.4+
 * gopherjs
 ```
-go get -u https://github.com/gopherjs/gopherjs
+go get -u github.com/gopherjs/gopherjs
 ```
 
 ## Installation
@@ -51,7 +51,7 @@ type GUI struct{}
 //func to be called from web server
 func (g *GUI) Write(args *Args, reply *int) error {
 	//show welcome message:
-	jQuery("#output2").SetText(args.C)
+	jQuery(OUTPUT2).SetText("string from server:" + args.C)
 	return nil
 }
 
@@ -68,6 +68,7 @@ func main() {
 Then compile it by gopherjs to create ex.js:
 
 ```
+go get  
 gopherjs build ex.go
 ```
 
@@ -82,8 +83,10 @@ gopherjs build ex.go
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 </head>
 <body>
-    <span id="output"></span>
-    <span id="output2"></span>
+    <button>push me to multply!</button>
+    <div id="output"></div>
+    <br>
+    <div id="output2"></div>
     <script src="ex.js"></script>
 </body>
 </html>
@@ -116,7 +119,11 @@ func main() {
 }
 ```
 
-Then copy ex.html and ex.js to the webserver directory and access to http://localhost:7000/ex.html
+Then copy ex.html and ex.js to the webserver directory,
+```
+go run ex.go
+```
+, and access to http://localhost:7000/ex.html
 
 
 # Contribution

@@ -13,9 +13,9 @@ var jQuery = jquery.NewJQuery
 
 //aa
 const (
-	INPUT   = "input#name"
-	OUTPUT  = "span#output"
-	OUTPUT2 = "span#output2"
+	INPUT   = "button"
+	OUTPUT  = "#output"
+	OUTPUT2 = "#output2"
 )
 
 //Args is
@@ -31,7 +31,7 @@ type GUI struct{}
 //Write is
 func (g *GUI) Write(args *Args, reply *int) error {
 	//show welcome message:
-	jQuery(OUTPUT).SetText("from server:" + args.C)
+	jQuery(OUTPUT2).SetText("string from server:" + args.C)
 	return nil
 }
 
@@ -42,16 +42,19 @@ func main() {
 		log.Fatal(err)
 	}
 	//	defer b.Close()
-	jQuery(INPUT).On(jquery.KEYUP, func(e jquery.Event) {
+	i := 0
+	jQuery(INPUT).On(jquery.CLICK, func(e jquery.Event) {
 		go func() {
-			args := Args{A: 17, B: 8}
+			i++
+			args := Args{A: i, B: i}
 			var reply int
 			err = b.Call("Arith.Multiply", args, &reply)
 			if err != nil {
 				log.Fatal("arith error:", err)
 			}
 			//show welcome message:
-			jQuery(OUTPUT2).SetText("result of mult" + strconv.Itoa(reply))
+			ii := strconv.Itoa(i)
+			jQuery(OUTPUT).SetText("result of " + ii + "x" + ii + " from server:" + strconv.Itoa(reply))
 		}()
 	})
 

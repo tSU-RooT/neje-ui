@@ -31,8 +31,8 @@ func main() {
 	}
 	var reply int
 	for i := 0; i < 10; i++ {
-		log.Println("writing", i)
-		if err := ws.Call("GUI.Write", &Args{C: "test" + strconv.Itoa(i)}, &reply); err != nil {
+		log.Println("writing", i, "to browser")
+		if err := ws.Call("GUI.Write", &Args{C: strconv.Itoa(i)}, &reply); err != nil {
 			log.Fatal(err)
 		}
 		time.Sleep(10 * time.Second)
