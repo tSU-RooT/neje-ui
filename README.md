@@ -20,7 +20,7 @@ I made this library to make GUI by html5 on browser easily.
 This requires
 
 * git
-* go 1.4+
+* go 1.6+
 * gopherjs
 ```
 go get -u github.com/gopherjs/gopherjs
