@@ -6,20 +6,24 @@ import (
 	"time"
 
 	"github.com/utamaro/wsrpc/webserver"
+
+	"github.com/utamaro/wsrpc/example/shared"
 )
 
 //Args is
+/*
 type Args struct {
 	A int
 	B int
 	C string
 }
+*/
 
 //Arith is
 type Arith struct{}
 
 //Multiply is
-func (t *Arith) Multiply(args *Args, reply *int) error {
+func (t *Arith) Multiply(args *shared.Args, reply *int) error {
 	*reply = args.A * args.B
 	return nil
 }
@@ -32,7 +36,7 @@ func main() {
 	var reply int
 	for i := 0; i < 10; i++ {
 		log.Println("writing", i, "to browser")
-		if err := ws.Call("GUI.Write", &Args{C: strconv.Itoa(i)}, &reply); err != nil {
+		if err := ws.Call("GUI.Write", &shared.Args{C: strconv.Itoa(i)}, &reply); err != nil {
 			log.Fatal(err)
 		}
 		time.Sleep(10 * time.Second)

@@ -5,7 +5,10 @@ import (
 	"strconv"
 
 	"github.com/gopherjs/jquery"
+
 	"github.com/utamaro/wsrpc/browser"
+
+	"github.com/utamaro/wsrpc/example/shared"
 )
 
 //convenience:
@@ -18,18 +21,20 @@ const (
 	OUTPUT2 = "#output2"
 )
 
+/*
 //Args is
 type Args struct {
 	A int
 	B int
 	C string
 }
+*/
 
 //GUI is
 type GUI struct{}
 
 //Write is
-func (g *GUI) Write(args *Args, reply *int) error {
+func (g *GUI) Write(args *shared.Args, reply *int) error {
 	//show welcome message:
 	jQuery(OUTPUT2).SetText("string from server:" + args.C)
 	return nil
@@ -46,7 +51,7 @@ func main() {
 	jQuery(INPUT).On(jquery.CLICK, func(e jquery.Event) {
 		go func() {
 			i++
-			args := Args{A: i, B: i}
+			args := shared.Args{A: i, B: i}
 			var reply int
 			err = b.Call("Arith.Multiply", args, &reply)
 			if err != nil {
