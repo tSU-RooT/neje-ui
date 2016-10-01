@@ -10,12 +10,11 @@ before_install:
 - go get github.com/mattn/goveralls
 -  if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 - export PATH=$PATH:$GOPATH/bin
+- go get -u github.com/gopherjs/gopherjs
 
 script:
-- cd webserver;go test -v -covermode=count -coverprofile=coverage.out;cd ..
-- cd browser;go test -v -covermode=count -coverprofile=coverage.out;cd ..
-- cd example/browser;go test -v -covermode=count -coverprofile=coverage.out;cd ..
-- cd example/webserver;go test -v -covermode=count -coverprofile=coverage.out;cd ..
+- cd example/browser;gopherjs build ex.go;cd ..
+- cd example/webserver;go build ex.go;cd ..
 
 after_script:
 - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
