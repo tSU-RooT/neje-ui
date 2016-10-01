@@ -7,7 +7,9 @@
 
 Not Embed, Just Execute chrome browser for UI in golang.
 
-For now just a PoC(proof of concept).  Don't believe so much :)
+For now just a PoC(proof of concept).  Don't believe me so much :)
+
+I only checked it on linux, not on win,osx. 
 
 ## Overview
 
@@ -25,7 +27,7 @@ You can write server-side program and client side program in golang.
 This requires
 
 * git
-* go 1.6+
+* go 1.7 (for gopherjs)
 * gopherjs
 ```
 go get -u github.com/gopherjs/gopherjs
@@ -33,7 +35,7 @@ go get -u github.com/gopherjs/gopherjs
 
 ## Installation
 
-    $ go get -u github.com/utamaro/neje-uis
+    $ go get -u github.com/utamaro/neje-ui
 
 
 ## Example

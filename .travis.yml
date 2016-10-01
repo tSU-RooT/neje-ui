@@ -1,7 +1,6 @@
 language: go
 
 go:
-  - 1.6
   - 1.7
 
 before_install:
@@ -13,8 +12,8 @@ before_install:
 - go get -u github.com/gopherjs/gopherjs
 
 script:
-- cd example/browser;gopherjs build ex.go;cd ..
-- cd example/webserver;go build ex.go;cd ..
+- cd example/browser;gopherjs build ex.go;cd ..;cd ..
+- cd example/webserver;go build ex.go;cd ..;cd ..
 
 after_script:
 - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
