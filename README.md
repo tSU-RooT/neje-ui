@@ -11,9 +11,12 @@ For now just a PoC(proof of concept).  Don't believe me so much :)
 
 I only checked it on linux, not on win,osx. 
 
+![](http://imgur.com/b6wQfzZ.jpg)
+
+
 ## Overview
 
-This library is an UI alternative for golang by using installed chrome browser(or something else) that is already installed.
+This library is an UI alternative for golang by using chrome browser(or something else) that is already installed.
 
 This communicates with browser by JSON-RPC on websocket using [gopherjs](https://github.com/gopherjs/gopherjs).
 
