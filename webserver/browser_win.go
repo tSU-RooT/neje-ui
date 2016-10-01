@@ -1,3 +1,5 @@
+// +build windows
+
 /*
  * Copyright (c) 2016, Shinya Yagyu
  * All rights reserved.
@@ -26,44 +28,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package main
+package webserver
 
-import (
-	"log"
-	"time"
+import "log"
 
-	"github.com/utamaro/neje-ui/webserver"
-)
-
-//Msg  is struct to bel called from remote by rpc.
-type Msg struct{}
-
-//Message writes a message to the browser.
-func (t *Msg) Message(m *string, response *string) error {
-	*response = "OK, I heard that you said\"" + *m + "\""
-	return nil
-}
-
-func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	ws, err := webserver.New("", "ex.html", new(Msg))
+//browserPath returns paths of chrome and other browsers from the regstry.
+func browserPath() ([]string, []string) {
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE,
+		`SOFTWARE\Microsoft\Windows NT\CurrentVersion\App Paths`,
+		registry.QUERY_VALUE)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err)
+		return nil, nil
 	}
-	i := 0
-	for {
-		select {
-		case <-ws.Finished:
-			log.Println("browser was closed. Exiting...")
-			return
-		case <-time.After(10 * time.Second):
-			i++
-			log.Println("writing", i, "to browser")
-			msg := "Now " + time.Now().String() + " at server!"
-			reply := ""
-			if err := ws.Call("GUI.Write", &msg, &reply); err != nil {
-				log.Fatal(err)
-			}
-		}
+	defer k.Close()
+
+	s, _, err := k.GetStringValue("chrome.exe")
+	if err != nil {
+		log.Printf(err)
+		return nil, nil
 	}
+
+	return []string{"cmd /c start"}, []string{s}
 }

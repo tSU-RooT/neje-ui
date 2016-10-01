@@ -1,3 +1,31 @@
+/*
+ * Copyright (c) 2016, Shinya Yagyu
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package browser
 
 import (
@@ -6,6 +34,7 @@ import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
 
+	"github.com/gopherjs/gopherjs/js"
 	"github.com/gopherjs/websocket"
 )
 
@@ -17,26 +46,27 @@ type Browser struct {
 }
 
 //New connects websocket and returns Browser obj.
-func New(dest string, strs ...interface{}) (*Browser, error) {
+func New(strs ...interface{}) (*Browser, error) {
 	var err error
 	b := &Browser{}
 	for _, str := range strs {
-		if err := rpc.Register(str); err != nil {
-			return nil, err
+		if errr := rpc.Register(str); errr != nil {
+			return nil, errr
 		}
 	}
-	b.s, err = websocket.Dial("ws://" + dest + "/ws-client") // Blocks until connection is established
+	port := js.Global.Get("window").Get("location").Get("port").String()
+	b.s, err = websocket.Dial("ws://localhost:" + port + "/ws-client") // Blocks until connection is established
 	if err != nil {
 		return nil, err
 	}
-	log.Println("ws-client connected")
+	log.Println("connected to ws-client")
 	go jsonrpc.ServeConn(b.s)
 
-	b.c, err = websocket.Dial("ws://" + dest + "/ws-server") // Blocks until connection is established
+	b.c, err = websocket.Dial("ws://localhost:" + port + "/ws-server") // Blocks until connection is established
 	if err != nil {
 		return nil, err
 	}
-	log.Println("client connected")
+	log.Println("connected to ws-server")
 	b.Client = jsonrpc.NewClient(b.c)
 	return b, nil
 }

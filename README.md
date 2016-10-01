@@ -1,19 +1,22 @@
-[![Build Status](https://travis-ci.org/utamaro/wsrpc.svg?branch=master)](https://travis-ci.org/utamaro/wsrpc)
-[![GoDoc](https://godoc.org/github.com/utamaro/wsrpc?status.svg)](https://godoc.org/github.com/utamaro/wsrpc)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/utamaro/wsrpc/master/LICENSE)
+[![Build Status](https://travis-ci.org/utamaro/neje-ui.svg?branch=master)](https://travis-ci.org/utamaro/neje-ui)
+[![GoDoc](https://godoc.org/github.com/utamaro/neje-ui?status.svg)](https://godoc.org/github.com/utamaro/neje-ui)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/utamaro/neje-ui/master/LICENSE)
 
 
-# wsrpc
+# neje-ui
+
+Not Embed, Just Execute for UI in golang.
 
 ## Overview
 
-This is a library to communicate with browser by JSON-RPC on websocket using
-[gopherjs](https://github.com/gopherjs/gopherjs).
+This library is an UI alternative for golang by using installed chrome browser(or something else) that is already installed.
 
-You can call funcs on browser from server (and vice versa) in [golang RPC-style](https://golang.org/pkg/net/rpc/) without considering about websocket and javascript.
+This communicates with browser by JSON-RPC on websocket using [gopherjs](https://github.com/gopherjs/gopherjs).
 
-I made this library to make GUI by html5 on browser easily.
+You can call funcs on browser from server (and vice versa) in [golang RPC-style](https://golang.org/pkg/net/rpc/) 
+without considering about websocket and javascript.
 
+You can write server-side program and client side program in golang.
 
 ## Requirements
 
@@ -28,7 +31,7 @@ go get -u github.com/gopherjs/gopherjs
 
 ## Installation
 
-    $ go get -u github.com/utamaro/wsrpc
+    $ go get -u github.com/utamaro/neje-uis
 
 
 ## Example
@@ -40,29 +43,31 @@ go get -u github.com/gopherjs/gopherjs
 
 ```go
 
-type Args struct {
-	A int
-	B int
-	C string
-}
-
+//GUI is struct to bel called from remote by rpc.
 type GUI struct{}
 
-//func to be called from web server
-func (g *GUI) Write(args *Args, reply *int) error {
+//Write writes a response from the server.
+func (g *GUI) Write(msg *string, reply *string) error {
 	//show welcome message:
-	jQuery(OUTPUT2).SetText("string from server:" + args.C)
+	jQuery("#from_server").SetText(msg)
 	return nil
 }
 
 func main() {
-	b, _ := browser.New("localhost:7000", new(GUI))
-	args := Args{A: 17, B: 8}
-	var reply int
-//call func in web server from browser 
-	b.Call("Arith.Multiply", args, &reply)
-	jQuery("#output").SetText(strconv.Itoa(reply))
+	b,_ := browser.New(new(GUI))
+	jQuery("button").On(jquery.CLICK, func(e jquery.Event) {
+		go func() {
+			m := jQuery("#to_server").Val()
+			response := ""
+			b.Call("Msg.Message", &m, &response)
+			//show welcome message:
+			jQuery("#response").SetText(response)
+		}()
+	})
+
 }
+
+
 ```
 
 Then compile it by gopherjs to create ex.js:
@@ -72,58 +77,74 @@ go get
 gopherjs build ex.go
 ```
 
-
-[ex.html](https://github.com/utamaro/wsrpc/blob/master/example/browser/ex.html)
-```html
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>wsrpc example</title>
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-</head>
-<body>
-    <button>push me to multply!</button>
-    <div id="output"></div>
-    <br>
-    <div id="output2"></div>
-    <script src="ex.js"></script>
-</body>
-</html>
-```
-
 ## webserver side
 
 [ex.go](https://github.com/utamaro/wsrpc/blob/master/example/webserver/ex.go)
 
 ```go
-type Args struct {
-	A int
-	B int
-	C string
-}
 
-type Arith struct{}
+//Msg  is struct to bel called from remote by rpc.
+type Msg struct{}
 
-//func to be called from browser
-func (t *Arith) Multiply(args *Args, reply *int) error {
-	*reply = args.A * args.B
+//Message writes a message to the browser.
+func (t *Msg) Message(m *string, response *string) error {
+	*response = "OK, I heard that you said\"" + *m + "\""
 	return nil
 }
 
 func main() {
-	ws, _ := webserver.New("localhost:7000", new(Arith))
-	var reply int
-//call func in browswer from webserver 
-	ws.Call("GUI.Write", &Args{C: "test"}, &reply)
+	ws,_ := webserver.New("", "ex.html", new(Msg))
+
+	for {
+		select {
+		case <-ws.Finished:
+			log.Println("browser was closed. Exiting...")
+			return
+		case <-time.After(10 * time.Second):
+			msg := "Now " + time.Now().String() + " at server!"
+			reply := ""
+			ws.Call("GUI.Write", &msg, &reply)
+		}
+	}
 }
+
 ```
 
 Then copy ex.html and ex.js to the webserver directory,
 ```
 go run ex.go
 ```
-, and access to http://localhost:7000/ex.html
+
+Then your chrome browser (or something else if chrome is not installed) automatically is opened and
+display the demo.
+
+## What is It Doing?
+
+1. Start a webserver including websocket at a free port at localhost.
+1. Search chrome browser. 
+	1. If windows, read registry to get the path to chrome. 
+	2. If macos, just run "open -a google chrome ".
+    3. if linux, run "google-chrome", "chrome", or something else.
+1. If chrome is found, run chrome with the options "--disable-extension --app=<url>"
+1. if chrome is not found, 
+	1. If windows, just run "start <url>". 
+	2. If macos, just run "open <url>  ".
+    3. if linux, just run "xdg-open <url>"
+1. communicate between webserver and browser using websocket.
+
+## Why not embed chrome lib?
+
+1. chrome lib is very big(about 100MB?) for single apps.
+2. chrome lib APIs are always changing.
+3. Not want to loose eco system(easy to cross compile etc) of golang.
+4. Chrome lib is too difficult to understand for me :( .
+5. Chrome browser has convinent options for application (--app etc).
+
+### Pros
+ Can make golang progs that can be cross compiled easily with small size.
+
+### Cons
+ Cann't control browser precisely, must control them by javascript manually. (window size, menu etc.)
 
 
 # Contribution

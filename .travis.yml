@@ -14,6 +14,8 @@ before_install:
 script:
 - cd webserver;go test -v -covermode=count -coverprofile=coverage.out;cd ..
 - cd browser;go test -v -covermode=count -coverprofile=coverage.out;cd ..
+- cd example/browser;go test -v -covermode=count -coverprofile=coverage.out;cd ..
+- cd example/webserver;go test -v -covermode=count -coverprofile=coverage.out;cd ..
 
 after_script:
 - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci

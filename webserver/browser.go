@@ -26,44 +26,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package main
+package webserver
 
 import (
+	"errors"
+	"fmt"
 	"log"
-	"time"
-
-	"github.com/utamaro/neje-ui/webserver"
+	"os"
+	"os/exec"
+	"strings"
 )
 
-//Msg  is struct to bel called from remote by rpc.
-type Msg struct{}
+var option = " --disable-extension  --app=http://%s"
 
-//Message writes a message to the browser.
-func (t *Msg) Message(m *string, response *string) error {
-	*response = "OK, I heard that you said\"" + *m + "\""
-	return nil
+func browsers(def string) []string {
+	if def != "" {
+		return []string{def}
+	}
+	chrome, other := browserPath()
+	if exe := os.Getenv("BROWSER"); exe != "" {
+		other = append([]string{exe}, other...)
+	}
+	for i := range chrome {
+		chrome[i] += option
+	}
+	for i := range other {
+		other[i] += " %s"
+	}
+
+	return append(chrome, other...)
 }
 
-func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	ws, err := webserver.New("", "ex.html", new(Msg))
-	if err != nil {
-		log.Fatal(err)
-	}
-	i := 0
-	for {
-		select {
-		case <-ws.Finished:
-			log.Println("browser was closed. Exiting...")
-			return
-		case <-time.After(10 * time.Second):
-			i++
-			log.Println("writing", i, "to browser")
-			msg := "Now " + time.Now().String() + " at server!"
-			reply := ""
-			if err := ws.Call("GUI.Write", &msg, &reply); err != nil {
-				log.Fatal(err)
-			}
+func tryBrowser(def string, p string) (chan struct{}, error) {
+	cmds := browsers(def)
+	for _, v := range cmds {
+		v = fmt.Sprintf(v, p)
+		// Separate command and arguments for exec.Command.
+		args := strings.Split(v, " ")
+		if len(args) == 0 {
+			continue
 		}
+		log.Println("executing", v)
+		viewer := exec.Command(args[0], args[1:]...)
+		viewer.Stderr = os.Stderr
+		if err := viewer.Start(); err != nil {
+			log.Println(err)
+			continue
+		}
+		ch := make(chan struct{})
+		go func() {
+			if err := viewer.Wait(); err != nil {
+				log.Println(err)
+			}
+			ch <- struct{}{}
+		}()
+		return ch, nil
 	}
+	return nil, errors.New("no browsers are found")
 }

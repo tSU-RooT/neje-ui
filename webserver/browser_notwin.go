@@ -1,3 +1,5 @@
+// +build !windows
+
 /*
  * Copyright (c) 2016, Shinya Yagyu
  * All rights reserved.
@@ -26,44 +28,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package main
+package webserver
 
-import (
-	"log"
-	"time"
+import "runtime"
 
-	"github.com/utamaro/neje-ui/webserver"
-)
+//browserPath returns paths of chrome and other browsers.
 
-//Msg  is struct to bel called from remote by rpc.
-type Msg struct{}
+func browserPath() ([]string, []string) {
+	switch runtime.GOOS {
+	case "darwin":
+		return []string{"/usr/bin/open -a Google\\ Chrome"}, []string{"/usr/bin/open"}
 
-//Message writes a message to the browser.
-func (t *Msg) Message(m *string, response *string) error {
-	*response = "OK, I heard that you said\"" + *m + "\""
-	return nil
-}
-
-func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	ws, err := webserver.New("", "ex.html", new(Msg))
-	if err != nil {
-		log.Fatal(err)
-	}
-	i := 0
-	for {
-		select {
-		case <-ws.Finished:
-			log.Println("browser was closed. Exiting...")
-			return
-		case <-time.After(10 * time.Second):
-			i++
-			log.Println("writing", i, "to browser")
-			msg := "Now " + time.Now().String() + " at server!"
-			reply := ""
-			if err := ws.Call("GUI.Write", &msg, &reply); err != nil {
-				log.Fatal(err)
-			}
-		}
+	default:
+		return []string{
+				"chrome",
+				"google-chrome",
+				"chrome-stable",
+				"google-chrome-stable",
+				"/opt/google/chrome/chrome",
+				"/opt/google/chrome/google-chrome",
+			},
+			[]string{"xdg-open"}
 	}
 }
