@@ -5,7 +5,8 @@
 
 # neje-ui
 
-Not Embed, Just Execute for UI in golang.
+Not Embed, Just Execute chrome browser for UI in golang.
+For now just a PoC(proof of concept).  Don't believe so much :)
 
 ## Overview
 
