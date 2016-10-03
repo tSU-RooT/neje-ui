@@ -57,7 +57,7 @@ func New(bpath, firstPage string, strs ...interface{}) (*WebServer, error) {
 	}
 	var err error
 	addr := w.start()
-	w.Finished, err = tryBrowser(bpath, addr.String()+"/"+firstPage)
+	w.Finished, err = tryBrowser(bpath, "http://"+addr.String()+"/"+firstPage)
 	<-w.ch
 	return w, err
 }

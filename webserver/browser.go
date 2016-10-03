@@ -37,7 +37,7 @@ import (
 	"strings"
 )
 
-var option = " --disable-extension  --app=http://%s"
+var option = " --disable-extension  --app=%s"
 
 func browsers(def string) []string {
 	if def != "" {
