@@ -41,6 +41,7 @@ func browserPath() ([]string, []string) {
 
 	default:
 		return []string{
+				"chromium-browser",
 				"chrome",
 				"google-chrome",
 				"chrome-stable",
